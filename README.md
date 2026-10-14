@@ -18,7 +18,7 @@ A Logistic Regression classifier is trained to predict hiring decisions. Demogra
 - Evaluate model performance using standard classification metrics.
 - Measure gender fairness using Demographic Parity and Equal Opportunity.
 - Compare the findings from both fairness metrics.
-- Discuss the limitations of evaluating fairness using a single dataset and model.
+- Examine how the choice of fairness metric affects the interpretation of gender fairness.
 
 ## Dataset
 
@@ -26,13 +26,11 @@ The study uses the publicly available *AI Fair Recruitment Dataset* from Kaggle.
 
 **Source:** https://www.kaggle.com/datasets/roiiith/ai-fair-recrutment-dataset
 
-The dataset contains recruitment-related information, including candidate scores, experience, education, and gender, alongside the hiring decision.
+The dataset contains recruitment-related information, including candidate scores, experience, education, gender, and hiring decisions.
 
 The original dataset contains 121,200 rows and 16 columns. Data preprocessing includes removing duplicate records and handling missing values.
 
 After preprocessing, the cleaned dataset contains **119,971 rows and 16 columns**.
-
-> Note: The dataset's original licence and generation method should be verified before redistributing the data. The cleaned dataset should not be redistributed unless its licence permits it.
 
 ## Methodology
 
@@ -51,7 +49,7 @@ Preprocessing transformations are fitted on the training data and then applied t
 
 The study uses **Logistic Regression** as its classification model.
 
-The target variable is `Hiring_Decision`, where `1` represents a hiring decision and `0` represents a rejection.
+The target variable is `Hiring_Decision`, where `1` represents hired and `0` represents a rejected.
 
 ### Fairness Metrics
 
@@ -61,9 +59,44 @@ Measures whether different gender groups have similar positive prediction rates.
 
 **Equal Opportunity (EO)**
 
-Compares true positive rates across groups among candidates classified as qualified according to the study's qualification definition.
+Compares true positive rates across groups among candidates classified as qualified according to the study's qualification proxy.
 
-For Equal Opportunity, the study uses a qualification proxy based on candidate assessment scores. Since this proxy is not an independently verified ground-truth qualification label, the resulting fairness measurements must be interpreted with caution.
+For Equal Opportunity, the study uses a qualification proxy based on candidate assessment scores.
+
+## Model Performance
+
+The Logistic Regression model achieved the following results on the test set:
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 98.55% |
+| Precision | 97.11% |
+| Recall | 97.26% |
+| F1-score | 97.19% |
+
+These results describe the model's classification performance. They do not, by themselves, establish that the model is fair across gender groups.
+
+## Results and Interpretation
+
+The fairness analysis compares predicted hiring rates and true positive rates across gender groups.
+
+Demographic Parity evaluates differences in positive prediction rates, while Equal Opportunity focuses on differences in true positive rates among candidates considered qualified under the study's proxy definition.
+
+The two metrics evaluate different aspects of fairness. Their results are discussed in the research paper and the fairness analysis notebook.
+
+## Limitations
+
+### Qualification Proxy
+
+The dataset did not provide an independent qualification label. So, a qualification proxy was created using the average of Skill Score, Aptitude Test Score, Technical Test Score and Interview Score along with a threshold of >60. This may have affected the Equal Opportunity result.
+
+### Dataset Characteristics
+
+The result uses a single recruitment dataset. So, the finding may not represent real world recruitment systems or other datasets.
+
+### Model and Evaluation
+
+Only the Logistic Regression model was evaluated, using 80% train and 20% test split. Different results may be obtained if different models or different splits were used.
 
 ## Repository Structure
 
@@ -87,37 +120,6 @@ AI-Biasness/
 └── README.md
 ```
 
-## Model Performance
-
-The Logistic Regression model achieved the following results on the test set:
-
-| Metric | Score |
-|---|---:|
-| Accuracy | 98.55% |
-| Precision | 97.11% |
-| Recall | 97.26% |
-| F1-score | 97.19% |
-
-These results describe the model's classification performance. They do not, by themselves, establish that the model is fair across gender groups.
-
-## Results and Interpretation
-
-The fairness analysis compares the predicted hiring rates and true positive rates across gender groups.
-
-Demographic Parity evaluates differences in positive prediction rates, while Equal Opportunity focuses on differences in true positive rates among candidates considered qualified under the study's proxy definition.
-
-The two metrics evaluate different aspects of fairness, so their results should be interpreted in the context of the research question, the dataset, and the qualification proxy.
-
-Refer to the research paper and the fairness analysis notebook for the detailed findings.
-
-## Limitations
-
-- The study uses one dataset and one classification model.
-- The dataset's representativeness of real-world recruitment is not established.
-- The qualification proxy may not accurately represent actual candidate qualifications.
-- Fairness metrics capture specific definitions of fairness and cannot represent every ethical consideration in recruitment.
-- High classification performance does not guarantee fair outcomes.
-
 ## Tools and Technologies
 
 - Python
@@ -135,10 +137,3 @@ The research paper is available in the `paper/` directory, subject to the files 
 
 ## Authors and Acknowledgements
 
-This project was conducted as a collaborative research study on fairness in AI-based recruitment.
-
-We acknowledge the dataset contributors and the research mentor for their guidance.
-
-## Disclaimer
-
-This project is intended for academic research and educational purposes. Its results should not be used as the sole basis for real-world recruitment decisions.
